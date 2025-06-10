@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Final Project: Quantitative Reasoning</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+
+    <style>
+        /* Custom styles for an 'avant-garde' feel */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #111111;
+            color: #EAEAEA;
+        }
+        h1, h2, h3 {
+            font-family: 'Syne', sans-serif;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+        }
+        .chapter-item {
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            cursor: pointer;
+        }
+        .chapter-item:hover {
+            background-color: #2a2a2a;
+            color: #ffffff;
+        }
+        .chapter-item.active {
+            background-color: #4A90E2;
+            color: #ffffff;
+            transform: translateX(10px);
+        }
+        .video-container {
+            box-shadow: 0 0 40px rgba(74, 144, 226, 0.3);
+            border: 1px solid rgba(74, 144, 226, 0.2);
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-24">
+
+        <!-- Header -->
+        <header class="text-center mb-12 md:mb-20">
+            <h1 class="text-4xl sm:text-5xl md:text-7xl font-extrabold text-white tracking-tighter">
+                Quantitative Reasoning
+            </h1>
+            <p class="mt-2 text-lg sm:text-xl text-gray-400 font-light">Jason Orozco Zarco</p>
+        </header>
+
+        <!-- Main Content -->
+        <main class="grid grid-cols-1 lg:grid-cols-3 gap-12 lg:gap-16">
+            
+            <!-- Video Player Column -->
+            <div class="lg:col-span-2 w-full">
+                <div class="aspect-w-16 aspect-h-9 bg-black rounded-lg overflow-hidden video-container">
+                    <!-- 
+                        IMPORTANT: Replace the 'src' attribute below with the path or URL to your video file.
+                        This placeholder is a 3-minute timer video for demonstration.
+                    -->
+                    <video id="main-video" class="w-full h-full" controls preload="metadata">
+                        <source src="https://placehold.co/1920x1080.mp4?text=Your+3-Minute+Video+Here" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                </div>
+            </div>
+
+            <!-- Interactive Chapters Column -->
+            <div class="w-full">
+                <h2 class="text-2xl font-bold mb-4 text-white">Chapters</h2>
+                <p class="text-gray-400 mb-6 font-light">Click a topic to navigate the presentation.</p>
+                <ul id="chapters" class="space-y-3">
+                    <!-- 
+                        TODO: Adjust the 'data-time' attribute (in seconds) for each chapter 
+                        to match the timing in your final video.
+                    -->
+                    <li class="chapter-item p-4 border border-gray-700 rounded-lg" data-time="10">
+                        <span class="font-bold text-blue-400 mr-3">0:10</span>
+                        What is Quantitative Reasoning?
+                    </li>
+                    <li class="chapter-item p-4 border border-gray-700 rounded-lg" data-time="45">
+                        <span class="font-bold text-blue-400 mr-3">0:45</span>
+                        How It Helps Humans
+                    </li>
+                    <li class="chapter-item p-4 border border-gray-700 rounded-lg" data-time="90">
+                        <span class="font-bold text-blue-400 mr-3">1:30</span>
+                        Favorite Concept: [Your Concept]
+                    </li>
+                    <li class="chapter-item p-4 border border-gray-700 rounded-lg" data-time="135">
+                        <span class="font-bold text-blue-400 mr-3">2:15</span>
+                        Main Takeaways
+                    </li>
+                    <li class="chapter-item p-4 border border-gray-700 rounded-lg" data-time="160">
+                        <span class="font-bold text-blue-400 mr-3">2:40</span>
+                        Future Excitement
+                    </li>
+                </ul>
+            </div>
+
+        </main>
+    </div>
+
+    <footer class="text-center py-8 mt-12 border-t border-gray-800">
+        <p class="text-gray-500">Campus Math.125</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const video = document.getElementById('main-video');
+            const chapters = document.getElementById('chapters');
+            const chapterItems = chapters.querySelectorAll('.chapter-item');
+
+            // Function to handle chapter clicks
+            chapters.addEventListener('click', (e) => {
+                const chapter = e.target.closest('.chapter-item');
+                if (chapter && chapter.dataset.time) {
+                    const time = parseFloat(chapter.dataset.time);
+                    video.currentTime = time;
+                    video.play();
+                }
+            });
+
+            // Function to update active chapter based on video time
+            const updateActiveChapter = () => {
+                const currentTime = video.currentTime;
+                let activeChapter = null;
+
+                chapterItems.forEach(chapter => {
+                    const chapterTime = parseFloat(chapter.dataset.time);
+                    if (currentTime >= chapterTime) {
+                        activeChapter = chapter;
+                    }
+                });
+                
+                chapterItems.forEach(item => {
+                    item.classList.remove('active');
+                });
+
+                if (activeChapter) {
+                    activeChapter.classList.add('active');
+                }
+            };
+            
+            // Listen for time updates on the video
+            video.addEventListener('timeupdate', updateActiveChapter);
+        });
+    </script>
+
+</body>
+</html>
