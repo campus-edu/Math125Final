@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Final Project: Quantitative Reasoning</title>
+    <title>Math 125 Final</title>
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -33,14 +33,19 @@
             background-color: #2a2a2a;
             color: #ffffff;
         }
-        .chapter-item.active {
-            background-color: #4A90E2;
-            color: #ffffff;
-            transform: translateX(10px);
-        }
         .video-container {
             box-shadow: 0 0 40px rgba(74, 144, 226, 0.3);
             border: 1px solid rgba(74, 144, 226, 0.2);
+            position: relative;
+            width: 100%;
+            padding-top: 56.25%; /* 16:9 Aspect Ratio */
+        }
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
         }
     </style>
 </head>
@@ -61,15 +66,9 @@
             
             <!-- Video Player Column -->
             <div class="lg:col-span-2 w-full">
-                <div class="aspect-w-16 aspect-h-9 bg-black rounded-lg overflow-hidden video-container">
-                    <!-- 
-                        IMPORTANT: Replace the 'src' attribute below with the path or URL to your video file.
-                        This placeholder is a 3-minute timer video for demonstration.
-                    -->
-                    <video id="main-video" class="w-full h-full" controls preload="metadata">
-                        <source src="https://youtu.be/EbR4HjgrBW8" type="video/mp4">
-                        Your browser does not support the video tag.
-                    </video>
+                <div class="video-container bg-black rounded-lg overflow-hidden">
+                    <!-- YouTube Iframe Embed -->
+                    <div id="player"></div>
                 </div>
             </div>
 
@@ -92,7 +91,7 @@
                     </li>
                     <li class="chapter-item p-4 border border-gray-700 rounded-lg" data-time="90">
                         <span class="font-bold text-blue-400 mr-3">1:30</span>
-                        Favorite Concept: Math for Change
+                        Math for Change
                     </li>
                     <li class="chapter-item p-4 border border-gray-700 rounded-lg" data-time="135">
                         <span class="font-bold text-blue-400 mr-3">2:15</span>
@@ -109,48 +108,41 @@
     </div>
 
     <footer class="text-center py-8 mt-12 border-t border-gray-800">
-        <p class="text-gray-500">Campus Math.125</p>
+        <p class="text-gray-500">Spring 2025 | Math125</p>
+        <p class="text-blue-500"><a href="https://www.campus.edu">campus.edu</a></p>
     </footer>
 
+    <!-- YouTube Iframe API -->
+    <script src="https://www.youtube.com/iframe_api"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const video = document.getElementById('main-video');
-            const chapters = document.getElementById('chapters');
-            const chapterItems = chapters.querySelectorAll('.chapter-item');
-
-            // Function to handle chapter clicks
-            chapters.addEventListener('click', (e) => {
-                const chapter = e.target.closest('.chapter-item');
-                if (chapter && chapter.dataset.time) {
-                    const time = parseFloat(chapter.dataset.time);
-                    video.currentTime = time;
-                    video.play();
+        // This code loads the IFrame Player API code asynchronously.
+        let player;
+        function onYouTubeIframeAPIReady() {
+            player = new YT.Player('player', {
+                // The video ID from your YouTube URL
+                videoId: 'EbR4HjgrBW8',
+                playerVars: {
+                    'playsinline': 1,
+                    'autoplay': 0, // Set to 0 to not autoplay
+                    'controls': 1,
+                    'rel': 0 // Don't show related videos at the end
                 }
             });
+        }
 
-            // Function to update active chapter based on video time
-            const updateActiveChapter = () => {
-                const currentTime = video.currentTime;
-                let activeChapter = null;
+        // This function is called when a chapter is clicked
+        document.addEventListener('DOMContentLoaded', () => {
+            const chapters = document.getElementById('chapters');
 
-                chapterItems.forEach(chapter => {
-                    const chapterTime = parseFloat(chapter.dataset.time);
-                    if (currentTime >= chapterTime) {
-                        activeChapter = chapter;
-                    }
-                });
-                
-                chapterItems.forEach(item => {
-                    item.classList.remove('active');
-                });
-
-                if (activeChapter) {
-                    activeChapter.classList.add('active');
+            chapters.addEventListener('click', (e) => {
+                const chapter = e.target.closest('.chapter-item');
+                // Check if the player is ready and the chapter has a time
+                if (player && player.seekTo && chapter && chapter.dataset.time) {
+                    const time = parseFloat(chapter.dataset.time);
+                    player.seekTo(time, true); // Seek to the specified time and play
+                    player.playVideo();
                 }
-            };
-            
-            // Listen for time updates on the video
-            video.addEventListener('timeupdate', updateActiveChapter);
+            });
         });
     </script>
 
