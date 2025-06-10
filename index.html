@@ -13,17 +13,23 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
 
+    <!-- Pre-render Theme Script -->
+    <!-- This script runs before the body is rendered to prevent the "flash" of the light theme. -->
+    <script>
+        (function() {
+            const theme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+            if (theme === 'dark') {
+                document.documentElement.classList.add('dark');
+            }
+        })();
+    </script>
+
     <style>
         /* --- Base & Light Mode Styles --- */
         body {
             font-family: 'Inter', sans-serif;
             background-color: #f4f4f9;
             color: #1d1d1f;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            padding: 1rem;
             transition: background-color 0.5s ease, color 0.5s ease;
         }
 
@@ -121,6 +127,20 @@
             border-color: rgba(255, 255, 255, 0.3);
         }
         
+        /* --- Loading Screen Animation --- */
+        #loading-logo {
+            /* Replace with your 'campus.png' file */
+            animation: rotate-stop-rotate 2.5s ease-in-out forwards;
+        }
+
+        @keyframes rotate-stop-rotate {
+            0% { transform: rotate(0deg) scale(0.8); opacity: 0; }
+            20% { opacity: 1; transform: rotate(0deg) scale(1); }
+            50% { transform: rotate(360deg) scale(1); }
+            70% { transform: rotate(360deg) scale(1); } /* Stop */
+            100% { transform: rotate(720deg) scale(0.8); opacity: 0; }
+        }
+
         /* Utility class overrides for dark mode */
         html.dark .text-gray-800 { color: #e5e5ea; }
         html.dark .text-gray-500 { color: #8e8e93; }
@@ -133,65 +153,74 @@
 </head>
 <body class="antialiased">
 
-    <div class="glass-sheet">
-        <main class="grid grid-cols-1 lg:grid-cols-3 gap-8 w-full">
+    <!-- Loading Screen -->
+    <div id="loading-screen" class="fixed inset-0 z-50 flex items-center justify-center bg-[#f4f4f9] dark:bg-[#1c1c1e] transition-opacity duration-500">
+        <!-- You can replace the placeholder URL with your 'campus.png' file -->
+        <img src="campus.png" alt="Loading..." id="loading-logo">
+    </div>
+
+    <!-- Main Content Wrapper -->
+    <div id="main-content" class="w-full h-full flex items-center justify-center min-h-screen p-4 opacity-0 transition-opacity duration-1000">
+        <div class="glass-sheet">
+            <main class="grid grid-cols-1 lg:grid-cols-3 gap-8 w-full">
+                
+                <!-- Left Column: Title & Video -->
+                <div class="lg:col-span-2 w-full flex flex-col gap-6">
+                     <header>
+                        <h1 class="tracking-tight">
+                            Quantitative Reasoning
+                        </h1>
+                        <p class="mt-2 text-lg text-gray-500">Jason Orozco Zarco</p>
+                    </header>
+                    <div class="video-container bg-black">
+                        <div id="player"></div>
+                    </div>
+                </div>
+    
+                <!-- Right Column: Interactive Chapters -->
+                <div class="w-full flex flex-col justify-center">
+                    <div class="p-2">
+                         <h2 class="text-xl font-bold mb-4 px-2">Chapters</h2>
+                        <ul id="chapters" class="space-y-3">
+                            <li class="liquid-glass-button p-4 rounded-xl flex items-center" data-time="10">
+                                <span class="font-bold text-blue-600 mr-4">0:10</span>
+                                <span class="text-gray-800">What is Quantitative Reasoning?</span>
+                            </li>
+                            <li class="liquid-glass-button p-4 rounded-xl flex items-center" data-time="45">
+                                <span class="font-bold text-blue-600 mr-4">0:45</span>
+                                 <span class="text-gray-800">How It Helps Humans</span>
+                            </li>
+                            <li class="liquid-glass-button p-4 rounded-xl flex items-center" data-time="90">
+                                <span class="font-bold text-blue-600 mr-4">1:30</span>
+                                 <span class="text-gray-800">Math for Change</span>
+                            </li>
+                            <li class="liquid-glass-button p-4 rounded-xl flex items-center" data-time="135">
+                                <span class="font-bold text-blue-600 mr-4">2:15</span>
+                                 <span class="text-gray-800">Main Takeaways</span>
+                            </li>
+                            <li class="liquid-glass-button p-4 rounded-xl flex items-center" data-time="160">
+                                <span class="font-bold text-blue-600 mr-4">2:40</span>
+                                 <span class="text-gray-800">Future Excitement</span>
+                            </li>
+                        </ul>
+                    </div>
+                    <footer class="text-center p-4 mt-auto">
+                        <p class="text-gray-500 text-sm">Spring 2025 | Math125 | <a href="https://www.campus.edu" class="text-blue-500 hover:text-blue-700">campus.edu</a></p>
+                    </footer>
+                </div>
+    
+            </main>
             
-            <!-- Left Column: Title & Video -->
-            <div class="lg:col-span-2 w-full flex flex-col gap-6">
-                 <header>
-                    <h1 class="tracking-tight">
-                        Quantitative Reasoning
-                    </h1>
-                    <p class="mt-2 text-lg text-gray-500">Jason Orozco Zarco</p>
-                </header>
-                <div class="video-container bg-black">
-                    <div id="player"></div>
-                </div>
-            </div>
-
-            <!-- Right Column: Interactive Chapters -->
-            <div class="w-full flex flex-col justify-center">
-                <div class="p-2">
-                     <h2 class="text-xl font-bold mb-4 px-2">Chapters</h2>
-                    <ul id="chapters" class="space-y-3">
-                        <li class="liquid-glass-button p-4 rounded-xl flex items-center" data-time="10">
-                            <span class="font-bold text-blue-600 mr-4">0:10</span>
-                            <span class="text-gray-800">What is Quantitative Reasoning?</span>
-                        </li>
-                        <li class="liquid-glass-button p-4 rounded-xl flex items-center" data-time="45">
-                            <span class="font-bold text-blue-600 mr-4">0:45</span>
-                             <span class="text-gray-800">How It Helps Humans</span>
-                        </li>
-                        <li class="liquid-glass-button p-4 rounded-xl flex items-center" data-time="90">
-                            <span class="font-bold text-blue-600 mr-4">1:30</span>
-                             <span class="text-gray-800">Math for Change</span>
-                        </li>
-                        <li class="liquid-glass-button p-4 rounded-xl flex items-center" data-time="135">
-                            <span class="font-bold text-blue-600 mr-4">2:15</span>
-                             <span class="text-gray-800">Main Takeaways</span>
-                        </li>
-                        <li class="liquid-glass-button p-4 rounded-xl flex items-center" data-time="160">
-                            <span class="font-bold text-blue-600 mr-4">2:40</span>
-                             <span class="text-gray-800">Future Excitement</span>
-                        </li>
-                    </ul>
-                </div>
-                <footer class="text-center p-4 mt-auto">
-                    <p class="text-gray-500 text-sm">Spring 2025 | Math125 | <a href="https://www.campus.edu" class="text-blue-500 hover:text-blue-700">campus.edu</a></p>
-                </footer>
-            </div>
-
-        </main>
-        
-        <!-- Theme Toggle Button -->
-        <button id="theme-toggle" title="Toggle Dark Mode" class="liquid-glass-button absolute bottom-6 right-6 h-12 w-12 rounded-full flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 dark:focus:ring-offset-gray-800 focus:ring-blue-500">
-            <svg id="theme-toggle-dark-icon" class="hidden h-6 w-6 text-gray-800" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z" />
-            </svg>
-            <svg id="theme-toggle-light-icon" class="hidden h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z" />
-            </svg>
-        </button>
+            <!-- Theme Toggle Button -->
+            <button id="theme-toggle" title="Toggle Dark Mode" class="liquid-glass-button absolute bottom-6 right-6 h-12 w-12 rounded-full flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 dark:focus:ring-offset-gray-800 focus:ring-blue-500">
+                <svg id="theme-toggle-dark-icon" class="hidden h-6 w-6 text-gray-800" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z" />
+                </svg>
+                <svg id="theme-toggle-light-icon" class="hidden h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z" />
+                </svg>
+            </button>
+        </div>
     </div>
 
     <!-- YouTube Iframe API -->
@@ -211,7 +240,27 @@
             });
         }
 
-        // Wait for the DOM to be fully loaded
+        // Wait for the DOM and all resources to be fully loaded
+        window.addEventListener('load', () => {
+            const loadingScreen = document.getElementById('loading-screen');
+            const mainContent = document.getElementById('main-content');
+            
+            // Wait for the animation to finish
+            setTimeout(() => {
+                // Fade out the loading screen
+                loadingScreen.classList.add('opacity-0');
+                // Fade in the main content
+                mainContent.classList.remove('opacity-0');
+                
+                // Optional: remove loader from DOM after transition
+                setTimeout(() => {
+                    loadingScreen.style.display = 'none';
+                }, 500); 
+
+            }, 2500); // This duration should match the CSS animation
+        });
+
+
         document.addEventListener('DOMContentLoaded', () => {
             // Chapter navigation logic
             const chapters = document.getElementById('chapters');
@@ -230,24 +279,32 @@
             const themeToggleLightIcon = document.getElementById('theme-toggle-light-icon');
             const htmlEl = document.documentElement;
 
-            // Function to apply the selected theme
-            const setTheme = (theme) => {
+            // Function to update the visibility of the theme toggle icons
+            const updateIcons = (theme) => {
                 if (theme === 'dark') {
-                    htmlEl.classList.add('dark');
-                    themeToggleLightIcon.classList.remove('hidden'); // Show sun icon to switch to light
+                    themeToggleLightIcon.classList.remove('hidden');
                     themeToggleDarkIcon.classList.add('hidden');
-                    localStorage.setItem('theme', 'dark');
                 } else {
-                    htmlEl.classList.remove('dark');
                     themeToggleLightIcon.classList.add('hidden');
-                    themeToggleDarkIcon.classList.remove('hidden'); // Show moon icon to switch to dark
-                    localStorage.setItem('theme', 'light');
+                    themeToggleDarkIcon.classList.remove('hidden');
                 }
             };
 
-            // Check for saved theme in localStorage or user's OS preference
-            const currentTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-            setTheme(currentTheme);
+            // Function to set the theme, save to localStorage, and update icons
+            const setTheme = (theme) => {
+                if (theme === 'dark') {
+                    htmlEl.classList.add('dark');
+                    localStorage.setItem('theme', 'dark');
+                } else {
+                    htmlEl.classList.remove('dark');
+                    localStorage.setItem('theme', 'light');
+                }
+                updateIcons(theme);
+            };
+
+            // Set the initial state of the toggle icons when the DOM is ready
+            const initialTheme = htmlEl.classList.contains('dark') ? 'dark' : 'light';
+            updateIcons(initialTheme);
 
             // Add click listener to the toggle button
             themeToggleBtn.addEventListener('click', () => {
